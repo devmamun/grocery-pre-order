@@ -7,7 +7,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\RateLimiter;
+use Mamun\ShopPreOrder\Events\PreOrderCreated;
 use Mamun\ShopPreOrder\Http\Requests\StorePreOrderRequest;
 use Mamun\ShopPreOrder\Http\Resources\PreOrderResource;
 use Mamun\ShopPreOrder\Models\PreOrder;
@@ -94,6 +96,9 @@ class PreOrderController extends Controller
 
         // Log the rate limit attempt
         RateLimiter::hit('preorder.'.$request->ip());
+
+        // Trigger the PreOrderCreated event to send emails
+        Event::dispatch(new PreOrderCreated($preOrder));
 
         return $this->respond(new PreOrderResource($preOrder), 'Pre-order created successfully.', 201);
     }
