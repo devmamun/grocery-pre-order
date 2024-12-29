@@ -17,6 +17,11 @@ class StorePreOrderRequest extends FormRequest
         return true;
     }
 
+    private function isAdmin()
+    {
+        return auth()->guard('api')->user() && auth()->guard('api')->user()->role === 'admin';
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -24,13 +29,20 @@ class StorePreOrderRequest extends FormRequest
      */
     public function rules()
     {
-        return [
+        $rules = [
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'phone' => 'nullable|string|max:15',
             'product_id' => 'required|exists:products,id',
             'g-recaptcha-response' => 'required',
         ];
+
+        // Skip reCAPTCHA validation for authenticated admin users
+        if ($this->isAdmin()) {
+            unset($rules['g-recaptcha-response']);
+        }
+
+        return $rules;
     }
 
     public function messages()
@@ -51,7 +63,7 @@ class StorePreOrderRequest extends FormRequest
     public function withValidator($validator)
     {
         $validator->after(function ($validator) {
-            if (!$this->verifyRecaptcha()) {
+            if (!$this->isAdmin() && !$this->verifyRecaptcha()) {
                 $validator->errors()->add('g-recaptcha-response', 'reCAPTCHA verification failed.');
             }
         });
