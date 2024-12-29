@@ -6,6 +6,7 @@ use Database\Seeders\DatabaseSeeder;
 use Illuminate\Support\ServiceProvider;
 use Mamun\ShopPreOrder\Database\Seeders\ProductSeeder;
 use Mamun\ShopPreOrder\Http\Middleware\RoleMiddleware;
+use Mamun\ShopPreOrder\Providers\EventServiceProvider;
 
 class ShopPreOrderServiceProvider extends ServiceProvider
 {
@@ -26,6 +27,8 @@ class ShopPreOrderServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        $this->app->register(EventServiceProvider::class);
+
         // Load the package routes
         $this->loadRoutesFrom(__DIR__.'/../routes/api.php');
 
