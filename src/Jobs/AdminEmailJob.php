@@ -32,8 +32,11 @@ class AdminEmailJob implements ShouldQueue
      */
     public function handle()
     {
-        User::where('role', 'admin')->get()->each(function ($user) {
-            Mail::to($user->email)->send(new PreOrderConfirmation($this->preOrder, 'admin'));
-        });
+        // Check if user class exists
+        if (class_exists(User::class)) {
+            User::where('role', 'admin')->get()->each(function ($user) {
+                Mail::to($user->email)->send(new PreOrderConfirmation($this->preOrder, 'admin'));
+            });
+        }
     }
 }

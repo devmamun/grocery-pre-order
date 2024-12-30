@@ -6,43 +6,59 @@
         "shop",
         "pre",
         "order"
-      ],
-      "license": "MIT",
-      "authors": [
-          {
-              "name": "Al Mamun",
-              "email": "mamun.weber@gmail.com"
-          }
-      ],
-      "require": {
-          "php": "^8.2"
-      },
-      "require-dev": {
-          "phpunit/phpunit": "^11.0.1"
-      },
-      "autoload": {
-          "psr-4": {
-              "Mamun\\ShopPreOrder\\": "src/",
-              "Mamun\\ShopPreOrder\\Database\\Factories\\": "database/factories/",
-              "Mamun\\ShopPreOrder\\Database\\Seeders\\": "database/seeders/"
-          }
-      },
-      "autoload-dev": {
-          "psr-4": {
-              "Mamun\\ShopPreOrder\\Test\\": "tests/"
-          }
-      },
-      "scripts": {
-          "test": "vendor/bin/phpunit"
-      },
-      "config": {
-          "sort-packages": true
-      },
-      "extra": {
-          "laravel": {
-              "providers": [
-                  "Mamun\\ShopPreOrder\\ShopPreOrderServiceProvider"
-              ]
-          }
-      }
-  }
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Al Mamun",
+            "email": "mamun.weber@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^8.2"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^9.9",
+        "phpunit/phpunit": "^11.0.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Mamun\\ShopPreOrder\\": "src/",
+            "Mamun\\ShopPreOrder\\Database\\Factories\\": "database/factories/",
+            "Mamun\\ShopPreOrder\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Mamun\\ShopPreOrder\\Test\\": "tests/",
+            "Workbench\\App\\": "workbench/app/",
+            "Workbench\\Database\\Factories\\": "workbench/database/factories/",
+            "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "post-autoload-dump": [
+            "@clear",
+            "@prepare"
+        ],
+        "clear": "@php vendor/bin/testbench package:purge-skeleton --ansi",
+        "prepare": "@php vendor/bin/testbench package:discover --ansi",
+        "build": "@php vendor/bin/testbench workbench:build --ansi",
+        "serve": [
+            "Composer\\Config::disableProcessTimeout",
+            "@build",
+            "@php vendor/bin/testbench serve --ansi"
+        ]
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Mamun\\ShopPreOrder\\ShopPreOrderServiceProvider"
+            ]
+        }
+    }
+}

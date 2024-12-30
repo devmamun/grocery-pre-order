@@ -2,7 +2,6 @@
 
 namespace Mamun\ShopPreOrder\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -13,7 +12,7 @@ use Mamun\ShopPreOrder\Http\Requests\StorePreOrderRequest;
 use Mamun\ShopPreOrder\Http\Resources\PreOrderResource;
 use Mamun\ShopPreOrder\Models\PreOrder;
 
-class PreOrderController extends Controller
+class PreOrderController
 {
     private function respond($data = null, $message = null, $status = 200)
     {
