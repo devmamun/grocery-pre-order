@@ -9,6 +9,12 @@ use Illuminate\Support\Facades\Bus;
 
 class SendPreOrderNotification
 {
+    /**
+     * Handle the event.
+     *
+     * @param  \Mamun\ShopPreOrder\Events\PreOrderCreated  $event
+     * @return void
+     */
     public function handle(PreOrderCreated $event)
     {
         // Chain the jobs to ensure the admin email is sent first

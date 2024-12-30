@@ -15,12 +15,22 @@ class PreOrderConfirmation extends Mailable implements ShouldQueue
     public PreOrder $preOrder;
     public string $recipientType;
 
+    /**
+     * Create a new message instance.
+     *
+     * @return void
+     */
     public function __construct(PreOrder $preOrder, string $recipientType)
     {
         $this->preOrder = $preOrder;
         $this->recipientType = $recipientType;
     }
 
+    /**
+     * Build the message.
+     *
+     * @return $this
+     */
     public function build()
     {
         return $this->view('grocery::emails.preorderconfirmation')

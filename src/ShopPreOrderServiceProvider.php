@@ -5,6 +5,7 @@ namespace Mamun\ShopPreOrder;
 use Database\Seeders\DatabaseSeeder;
 use Illuminate\Support\ServiceProvider;
 use Mamun\ShopPreOrder\Database\Seeders\ProductSeeder;
+use Mamun\ShopPreOrder\Http\Middleware\RateLimitMiddleware;
 use Mamun\ShopPreOrder\Http\Middleware\RoleMiddleware;
 use Mamun\ShopPreOrder\Providers\EventServiceProvider;
 
@@ -17,7 +18,9 @@ class ShopPreOrderServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        // Register any application services.
+        // Load and merge the package configuration file
+        $configPath = __DIR__ . '/../config/grocery.php';
+        $this->mergeConfigFrom($configPath, 'grocery');
     }
 
     /**
@@ -39,9 +42,15 @@ class ShopPreOrderServiceProvider extends ServiceProvider
 
         // Register middleware
         $this->app['router']->aliasMiddleware('role', RoleMiddleware::class);
+        $this->app['router']->aliasMiddleware('ratelimit', RateLimitMiddleware::class);
 
         $this->callAfterResolving(DatabaseSeeder::class, function ($seeder) {
             $seeder->call(ProductSeeder::class);
         });
+
+        // Publish configuration
+        $this->publishes([
+            __DIR__ . '/../config/grocery.php' => config_path('grocery.php'),
+        ], 'config');
     }
 }

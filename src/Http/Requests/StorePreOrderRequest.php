@@ -17,6 +17,11 @@ class StorePreOrderRequest extends FormRequest
         return true;
     }
 
+    /**
+     * Check if the authenticated user is an admin.
+     *
+     * @return bool
+     */
     private function isAdmin()
     {
         return auth()->guard('api')->user() && auth()->guard('api')->user()->role === 'admin';
@@ -45,6 +50,11 @@ class StorePreOrderRequest extends FormRequest
         return $rules;
     }
 
+    /**
+     * Get the error messages for the defined validation rules.
+     *
+     * @return array
+     */
     public function messages()
     {
         return [
@@ -52,6 +62,12 @@ class StorePreOrderRequest extends FormRequest
         ];
     }
 
+    /**
+     * Handle a failed validation attempt.
+     *
+     * @param  \Illuminate\Contracts\Validation\Validator  $validator
+     * @return void
+     */
     protected function failedValidation(\Illuminate\Contracts\Validation\Validator $validator)
     {
         $response = [
@@ -60,6 +76,12 @@ class StorePreOrderRequest extends FormRequest
         throw new \Illuminate\Validation\ValidationException($validator, response()->json($response, 422));
     }
 
+    /**
+     * Configure the validator instance.
+     *
+     * @param  \Illuminate\Validation\Validator  $validator
+     * @return void
+     */
     public function withValidator($validator)
     {
         $validator->after(function ($validator) {
@@ -69,6 +91,11 @@ class StorePreOrderRequest extends FormRequest
         });
     }
 
+    /**
+     * Verify the reCAPTCHA response.
+     *
+     * @return bool
+     */
     private function verifyRecaptcha()
     {
         $token = $this->input('g-recaptcha-response');

@@ -15,11 +15,21 @@ class AdminEmailJob implements ShouldQueue
 
     protected $preOrder;
 
+    /**
+     * Create a new job instance.
+     *
+     * @return void
+     */
     public function __construct($preOrder)
     {
         $this->preOrder = $preOrder;
     }
 
+    /**
+     * Execute the job.
+     *
+     * @return void
+     */
     public function handle()
     {
         User::where('role', 'admin')->get()->each(function ($user) {

@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\RateLimiter;
 use Mamun\ShopPreOrder\Events\PreOrderCreated;
 use Mamun\ShopPreOrder\Http\Requests\StorePreOrderRequest;
 use Mamun\ShopPreOrder\Http\Resources\PreOrderResource;
@@ -64,7 +63,7 @@ class PreOrderController extends Controller
 
         // Paginate sorted results
         $currentPage = LengthAwarePaginator::resolveCurrentPage();
-        $perPage = 5;
+        $perPage = config('grocery.pagination.per_page');
         $currentPageResults = $preOrders->slice(($currentPage - 1) * $perPage, $perPage)->values();
 
         $paginatedResults = new LengthAwarePaginator(
@@ -86,16 +85,8 @@ class PreOrderController extends Controller
      */
     public function store(StorePreOrderRequest $request): PreOrderResource|JsonResponse
     {
-        // Implement rate limiting
-        if (RateLimiter::tooManyAttempts('preorder.'.$request->ip(), 10)) {
-            return $this->respond(null, 'Too many attempts. Please try again later.', 429);
-        }
-
         // Create a new pre-order
         $preOrder = PreOrder::create($request->validated());
-
-        // Log the rate limit attempt
-        RateLimiter::hit('preorder.'.$request->ip());
 
         // Trigger the PreOrderCreated event to send emails
         Event::dispatch(new PreOrderCreated($preOrder));
@@ -105,14 +96,13 @@ class PreOrderController extends Controller
 
     /**
      * Display the specified pre-order.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\JsonResponse
      */
     public function show(int $id): PreOrderResource|JsonResponse
     {
-        $preOrder = PreOrder::find($id);
-
-        if (!$preOrder) {
-            return $this->respond(null, 'Pre-order not found.', 404);
-        }
+        $preOrder = PreOrder::findOrFail($id);
 
         return $this->respond(new PreOrderResource($preOrder));
     }
@@ -126,11 +116,7 @@ class PreOrderController extends Controller
      */
     public function update(StorePreOrderRequest $request, $id): PreOrderResource|JsonResponse
     {
-        $preOrder = PreOrder::find($id);
-
-        if (!$preOrder) {
-            return $this->respond(null, 'Pre-order not found.', 404);
-        }
+        $preOrder = PreOrder::findOrFail($id);
 
         $preOrder->update($request->validated());
 
@@ -145,11 +131,7 @@ class PreOrderController extends Controller
      */
     public function destroy($id): JsonResponse
     {
-        $preOrder = PreOrder::find($id);
-
-        if (!$preOrder) {
-            return $this->respond(null, 'Pre-order not found.', 404);
-        }
+        $preOrder = PreOrder::findOrFail($id);
 
         $preOrder->delete();
 
